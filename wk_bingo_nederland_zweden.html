@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WK Bingo – Nederland vs Zweden</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f5f0;
+    min-height: 100dvh;
+    color: #111;
+  }
+
+  /* ── PICKER SCREEN ── */
+  #picker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: 32px 20px;
+    text-align: center;
+    gap: 24px;
+  }
+
+  #picker h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 3px;
+    color: #c8380a;
+    line-height: 1;
+  }
+
+  #picker .subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-top: -16px;
+  }
+
+  #picker .instructions {
+    font-size: 15px;
+    color: #333;
+    max-width: 300px;
+    line-height: 1.5;
+  }
+
+  .card-buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .card-btn {
+    aspect-ratio: 1;
+    border: 2px solid #e0e0e0;
+    background: white;
+    border-radius: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .card-btn:hover, .card-btn:active {
+    background: #c8380a;
+    border-color: #c8380a;
+    color: white;
+  }
+
+  .or-divider {
+    font-size: 13px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .random-btn {
+    padding: 14px 36px;
+    background: #c8380a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+
+  .random-btn:hover { background: #a82e08; }
+
+  /* ── GAME SCREEN ── */
+  #game {
+    display: none;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+
+  .game-header {
+    background: #c8380a;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .game-header .match {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    line-height: 1.1;
+  }
+
+  .game-header .match small {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.8;
+    letter-spacing: 0;
+  }
+
+  .back-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .bingo-header-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: #1a1a1a;
+  }
+
+  .bingo-header-row span {
+    text-align: center;
+    padding: 8px 4px;
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    border-right: 1px solid #333;
+  }
+
+  .bingo-header-row span:last-child { border-right: none; }
+
+  .bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    flex: 1;
+  }
+
+  .bingo-cell {
+    border: 0.5px solid #e0e0e0;
+    padding: 8px 5px;
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 10.5px;
+    line-height: 1.3;
+    color: #222;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .bingo-cell:active { background: #fff0ec; }
+
+  .bingo-cell.free {
+    background: #c8380a;
+    color: white;
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .bingo-cell.marked {
+    background: #fff5f2;
+  }
+
+  .bingo-cell.marked::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    background: rgba(200, 56, 10, 0.15);
+    border: 2px solid #c8380a;
+    pointer-events: none;
+  }
+
+  /* BINGO banner */
+  #bingo-banner {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  #bingo-banner.show {
+    display: flex;
+  }
+
+  #bingo-banner .bingo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px;
+    color: white;
+    letter-spacing: 6px;
+    text-shadow: 0 4px 24px rgba(200,56,10,0.8);
+    animation: pop 0.3s ease;
+  }
+
+  #bingo-banner .bingo-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,0.85);
+  }
+
+  #bingo-banner button {
+    margin-top: 8px;
+    padding: 12px 28px;
+    background: white;
+    color: #c8380a;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    80% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .card-footer {
+    padding: 10px 16px;
+    background: #f9f9f7;
+    border-top: 1px solid #e0e0e0;
+    font-size: 11px;
+    color: #888;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- PICKER -->
+<div id="picker">
+  <div>
+    <h1>WK BINGO</h1>
+    <p class="subtitle">🇳🇱 Nederland vs Zweden 🇸🇪 &nbsp;·&nbsp; 20 juni 2026</p>
+  </div>
+  <p class="instructions">Kies je kaartnummer, of laat het systeem er één kiezen.</p>
+  <div class="card-buttons" id="card-buttons"></div>
+  <div class="or-divider">of</div>
+  <button class="random-btn" onclick="startRandom()">🎲 Willekeurige kaart</button>
+</div>
+
+<!-- GAME -->
+<div id="game">
+  <div class="game-header">
+    <div class="match">
+      🇳🇱 Nederland – Zweden 🇸🇪
+      <small id="card-label"></small>
+    </div>
+    <button class="back-btn" onclick="goBack()">← Kaarten</button>
+  </div>
+  <div class="bingo-header-row">
+    <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
+  </div>
+  <div class="bingo-grid" id="bingo-grid"></div>
+  <div class="card-footer">Tik een vakje aan als het gebeurt · Vijf op een rij = BINGO!</div>
+</div>
+
+<!-- BINGO BANNER -->
+<div id="bingo-banner">
+  <div class="bingo-text">BINGO!</div>
+  <div class="bingo-sub">🎉 Vijf op een rij!</div>
+  <button onclick="closeBanner()">Doorgaan</button>
+</div>
+
+<script>
+const ALL_ITEMS = [
+  "Iemand valt dramatisch neer",
+  "Scheidsrechter wordt aangeschreeuwd",
+  "Gele kaart",
+  "Goal Nederland! 🎉",
+  "Keeper vangt de bal spectaculair",
+  "VAR-check",
+  "Speler houdt zijn gezicht vast (niks aan de hand)",
+  "Rode kaart",
+  "Penalty",
+  "Doelpunt in de blessuretijd",
+  "Eigen goal",
+  "Vrije trap gevaarlijk",
+  "Speler kust ring of tatoeage na goal",
+  "Coach staat te schreeuwen langs de lijn",
+  "Commentator schreeuwt de longen uit zijn lijf",
+  "Close-up van verdrietig gezicht",
+  "Slow-motion herhaling",
+  "Statistieken in beeld",
+  "Oranje vlag in het stadion",
+  "Camera filmt juichend publiek",
+  "Van Dijk kopt de bal weg 💪",
+  "Van Dijk als aanvoerder op beeld",
+  "Iemand in de kamer schreeuwt iets",
+  "Iemand pakt z'n telefoon erbij",
+  "Glaasje heffen bij een goal",
+  "Iemand voorspelt iets fouts",
+  "Keeper gooit de bal naar voren",
+  "Speler vraagt om water/wisselshirt",
+  "Commentator noemt het WK van 2010",
+  "Nederland op achterstand",
+  "Zweden-speler veinst pijn",
+  "Oranje shirt in het publiek",
+  "Wissel voor rust",
+  "Commentator zegt 'wereldgoal'",
+  "Corner voor Nederland",
+];
+
+// Seeded shuffle — zelfde seed = zelfde kaart, zodat kaart 3 altijd kaart 3 is
+function seededShuffle(arr, seed) {
+  const a = [...arr];
+  let s = seed;
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    const j = Math.abs(s) % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Bouw keuze-knoppen
+const btnContainer = document.getElementById('card-buttons');
+for (let i = 1; i <= 15; i++) {
+  const btn = document.createElement('button');
+  btn.className = 'card-btn';
+  btn.textContent = i;
+  btn.onclick = () => startCard(i);
+  btnContainer.appendChild(btn);
+}
+
+function startRandom() {
+  startCard(Math.ceil(Math.random() * 15));
+}
+
+let currentMarked = [];
+let currentCardNum = null;
+let bingoDone = false;
+
+function startCard(num) {
+  currentCardNum = num;
+  bingoDone = false;
+
+  const items = seededShuffle(ALL_ITEMS, num * 31337).slice(0, 24);
+  items.splice(12, 0, 'VRIJ VAKJE ⭐');
+
+  // Herstel opgeslagen staat
+  const savedKey = `bingo_card_${num}`;
+  const savedMarked = JSON.parse(localStorage.getItem(savedKey) || '[]');
+  currentMarked = savedMarked;
+
+  const grid = document.getElementById('bingo-grid');
+  grid.innerHTML = '';
+
+  items.forEach((text, i) => {
+    const cell = document.createElement('div');
+    const isFree = i === 12;
+    cell.className = 'bingo-cell' + (isFree ? ' free' : '');
+    cell.dataset.index = i;
+    cell.textContent = text;
+    if (!isFree) {
+      if (savedMarked.includes(i)) cell.classList.add('marked');
+      cell.addEventListener('click', () => {
+        cell.classList.toggle('marked');
+        const idx = currentMarked.indexOf(i);
+        if (idx === -1) currentMarked.push(i);
+        else currentMarked.splice(idx, 1);
+        localStorage.setItem(savedKey, JSON.stringify(currentMarked));
+        checkBingo();
+      });
+    }
+    grid.appendChild(cell);
+  });
+
+  document.getElementById('card-label').textContent = `Kaart ${num} van 15`;
+  document.getElementById('picker').style.display = 'none';
+  document.getElementById('game').style.display = 'flex';
+
+  // Check bingo voor eerder opgeslagen staat
+  checkBingo();
+}
+
+function goBack() {
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('picker').style.display = 'flex';
+}
+
+// Check vijf op een rij (rijen, kolommen, diagonalen)
+const LINES = [
+  [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],
+  [0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],
+  [0,6,12,18,24],[4,8,12,16,20]
+];
+
+function checkBingo() {
+  if (bingoDone) return;
+  const markedSet = new Set([...currentMarked, 12]);
+  for (const line of LINES) {
+    if (line.every(i => markedSet.has(i))) {
+      bingoDone = true;
+      document.getElementById('bingo-banner').classList.add('show');
+      return;
+    }
+  }
+}
+
+function closeBanner() {
+  document.getElementById('bingo-banner').classList.remove('show');
+}
+</script>
+</body>
+</html>
