@@ -334,6 +334,67 @@
     100% { transform: scale(1) rotate(0deg); opacity: 1; }
   }
 
+  /* ── DRINK POPUP ── */
+  #drink-popup {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 90;
+    align-items: flex-end;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  #drink-popup.show { display: flex; }
+
+  .drink-card {
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 32px 28px 40px;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .drink-icon { font-size: 52px; margin-bottom: 12px; }
+
+  .drink-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--oranje);
+    margin-bottom: 8px;
+  }
+
+  .drink-opdracht {
+    font-size: 22px;
+    font-weight: 800;
+    color: #111;
+    line-height: 1.3;
+    margin-bottom: 28px;
+  }
+
+  .drink-close {
+    width: 100%;
+    padding: 15px;
+    background: var(--oranje);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
   /* confetti dots */
   .confetti-wrap {
     position: fixed;
@@ -389,6 +450,16 @@
   <div class="card-footer">Tik aan als het gebeurt · Vijf op een rij = BINGO! 🎉</div>
 </div>
 
+<!-- DRINK POPUP -->
+<div id="drink-popup">
+  <div class="drink-card">
+    <div class="drink-icon" id="drink-icon">🥂</div>
+    <div class="drink-label">Drinkopdracht</div>
+    <div class="drink-opdracht" id="drink-opdracht"></div>
+    <button class="drink-close" onclick="closeDrinkPopup()">Gedaan! 🥂</button>
+  </div>
+</div>
+
 <!-- CONFETTI -->
 <div class="confetti-wrap" id="confetti"></div>
 
@@ -440,6 +511,35 @@ const ALL_ITEMS = [
   "Iemand wil naar de wc tijdens het spannendste moment",
   "Iemand zegt \"dit is mijn laatste drankje\"",
 ];
+
+const DRINK_OPDRACHTEN = [
+  { icon: '🥂', tekst: 'Neem een slokje' },
+  { icon: '👉', tekst: 'Geef iemand een slokje' },
+  { icon: '⬅️', tekst: 'De persoon links van jou drinkt' },
+  { icon: '➡️', tekst: 'De persoon rechts van jou drinkt' },
+  { icon: '🙌', tekst: 'Iedereen neemt een slokje' },
+  { icon: '🍹', tekst: 'Neem twee slokjes' },
+  { icon: '😈', tekst: 'Kies iemand die twee slokjes neemt' },
+  { icon: '👶', tekst: 'Jongste persoon drinkt' },
+  { icon: '✅', tekst: 'Degene met de meeste vakjes aangevinkt drinkt' },
+  { icon: '🎂', tekst: 'Toast op de verjaardag — iedereen drinkt!' },
+];
+
+function randomDrinkOpdracht() {
+  return DRINK_OPDRACHTEN[Math.floor(Math.random() * DRINK_OPDRACHTEN.length)];
+}
+
+function showDrinkPopup() {
+  const opdracht = randomDrinkOpdracht();
+  document.getElementById('drink-icon').textContent = opdracht.icon;
+  document.getElementById('drink-opdracht').textContent = opdracht.tekst;
+  document.getElementById('drink-popup').classList.add('show');
+}
+
+function closeDrinkPopup() {
+  document.getElementById('drink-popup').classList.remove('show');
+  checkBingo();
+}
 
 function seededShuffle(arr, seed) {
   const a = [...arr];
@@ -498,12 +598,14 @@ function startCard(num) {
     if (!isFree) {
       if (savedMarked.includes(i)) cell.classList.add('marked');
       cell.addEventListener('click', () => {
+        const wasMarked = cell.classList.contains('marked');
         cell.classList.toggle('marked');
         const idx = currentMarked.indexOf(i);
         if (idx === -1) currentMarked.push(i);
         else currentMarked.splice(idx, 1);
         localStorage.setItem(savedKey, JSON.stringify(currentMarked));
-        checkBingo();
+        if (!wasMarked) showDrinkPopup();
+        else checkBingo();
       });
     }
     grid.appendChild(cell);
