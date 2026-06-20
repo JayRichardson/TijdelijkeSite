@@ -139,6 +139,18 @@
 
   .random-btn:active { transform: translateY(1px); box-shadow: none; }
 
+  .reset-btn {
+    background: none;
+    border: none;
+    color: #bbb;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-top: -12px;
+  }
+  .reset-btn:active { color: #888; }
+
   /* ── GAME ── */
   #game {
     display: none;
@@ -436,6 +448,7 @@
   <div class="card-buttons" id="card-buttons"></div>
   <div class="or-divider">of</div>
   <button class="random-btn" onclick="startRandom()">🎲 Verras me!</button>
+  <button class="reset-btn" onclick="resetAlles()">↺ Reset kaart</button>
 </div>
 
 <!-- GAME -->
@@ -619,6 +632,14 @@ function startCard(num) {
   document.getElementById('picker').style.display = 'none';
   document.getElementById('game').style.display = 'flex';
   checkBingo();
+}
+
+function resetAlles() {
+  if (!confirm('Alle kaarten resetten? Dit wist alle aangevinkte vakjes.')) return;
+  for (let i = 1; i <= 15; i++) {
+    localStorage.removeItem(`bingo_card_${i}`);
+  }
+  alert('Reset gelukt! Iedereen kan opnieuw beginnen.');
 }
 
 function goBack() {
