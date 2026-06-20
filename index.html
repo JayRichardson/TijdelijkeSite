@@ -301,18 +301,22 @@
 
   .bingo-text {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 88px;
+    font-size: clamp(48px, 16vw, 88px);
     color: white;
-    letter-spacing: 6px;
+    letter-spacing: 4px;
     text-shadow: 0 0 40px rgba(232,66,10,0.9);
     animation: pop 0.35s ease;
     line-height: 1;
+    text-align: center;
+    padding: 0 16px;
   }
 
   .bingo-sub {
-    font-size: 17px;
+    font-size: 16px;
     color: rgba(255,255,255,0.8);
     font-weight: 600;
+    text-align: center;
+    padding: 0 24px;
   }
 
   #bingo-banner button {
@@ -465,9 +469,9 @@
 
 <!-- BINGO BANNER -->
 <div id="bingo-banner">
-  <div class="bingo-emoji">🎉</div>
-  <div class="bingo-text">BINGO!</div>
-  <div class="bingo-sub">Vijf op een rij — jij wint!</div>
+  <div class="bingo-emoji" id="bingo-emoji">🎉</div>
+  <div class="bingo-text" id="bingo-text">BINGO!</div>
+  <div class="bingo-sub" id="bingo-sub">Vijf op een rij — jij wint!</div>
   <button onclick="closeBanner()">Doorgaan 🥂</button>
 </div>
 
@@ -571,7 +575,7 @@ let currentCardNum = null;
 
 function startCard(num) {
   currentCardNum = num;
-  announcedLines = new Set();
+  announcedTypes = new Set();
   bingoQueue = [];
 
   const items = seededShuffle(ALL_ITEMS, num * 31337).slice(0, 24);
@@ -644,24 +648,24 @@ const BINGO_MESSAGES = {
   vol:       { emoji: '🏆', titel: 'VOLLE KAART!', sub: 'Alle vakjes aangevinkt — absolute winnaar!' },
 };
 
-let announcedLines = new Set();
+let announcedTypes = new Set();
 let bingoQueue = [];
 
 function checkBingo() {
   const markedSet = new Set([...currentMarked, 12]);
   const newBingos = [];
 
-  // Check lijnen
-  LINES.forEach((line, idx) => {
-    if (!announcedLines.has(idx) && line.cells.every(i => markedSet.has(i))) {
-      announcedLines.add(idx);
+  // Check lijnen — maar één melding per type
+  for (const line of LINES) {
+    if (!announcedTypes.has(line.type) && line.cells.every(i => markedSet.has(i))) {
+      announcedTypes.add(line.type);
       newBingos.push(line.type);
     }
-  });
+  }
 
-  // Check volle kaart (alle 25 vakjes)
-  if (!announcedLines.has('vol') && markedSet.size === 25) {
-    announcedLines.add('vol');
+  // Check volle kaart
+  if (!announcedTypes.has('vol') && markedSet.size === 25) {
+    announcedTypes.add('vol');
     newBingos.push('vol');
   }
 
