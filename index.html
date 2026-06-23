@@ -834,11 +834,11 @@ body { font-family: 'Inter', sans-serif; background: var(--grijs); color: var(--
   <div class="events-section">
     <div class="section-label">Kies een evenement</div>
 
-    <div class="event-card" onclick="openEvent('wk-ned-zwe')">
+    <div class="event-card" onclick="openEvent('wk-2026')">
       <div class="event-emoji">⚽</div>
       <div class="event-info">
-        <div class="event-name">WK Voetbal</div>
-        <div class="event-sub">NL vs Zweden · 20 juni</div>
+        <div class="event-name">WK Voetbal 2026</div>
+        <div class="event-sub">Elke wedstrijd · Groepsfase & KO</div>
       </div>
       <span class="event-badge badge-live">Live</span>
       <span class="chevron">›</span>
@@ -893,7 +893,7 @@ body { font-family: 'Inter', sans-serif; background: var(--grijs); color: var(--
     <button class="back-link" onclick="goHome()">← Terug</button>
     <div class="event-hero-emoji" id="ev-emoji">⚽</div>
     <div class="event-hero-name" id="ev-name">WK Voetbal</div>
-    <div class="event-hero-sub" id="ev-sub">NL vs Zweden · 20 juni 2026</div>
+    <div class="event-hero-sub" id="ev-sub">Elke wedstrijd · WK 2026</div>
   </div>
 
   <div class="tier-grid">
@@ -975,7 +975,7 @@ body { font-family: 'Inter', sans-serif; background: var(--grijs); color: var(--
 <div id="s-game" class="screen">
   <div class="game-header">
     <div class="match">
-      <span id="game-title">🇳🇱 NED – ZWE 🇸🇪</span>
+      <span id="game-title">⚽ WK BINGO 2026</span>
       <small id="card-label">Kaart 1 van 15</small>
     </div>
     <button class="back-btn" onclick="backFromGame()">← Kaarten</button>
@@ -1136,16 +1136,16 @@ body { font-family: 'Inter', sans-serif; background: var(--grijs); color: var(--
 // ══════════════════════════════════
 
 const EVENTS = {
-  'wk-ned-zwe': {
-    emoji: '⚽', name: 'WK Voetbal', sub: 'NL vs Zweden · 20 juni',
-    gameTitle: '🇳🇱 NED – ZWE 🇸🇪',
+  'wk-2026': {
+    emoji: '⚽', name: 'WK Voetbal 2026', sub: 'Elke wedstrijd · Groepsfase & KO',
+    gameTitle: '⚽ WK BINGO 2026',
     color: '#FF5722',
     items: [
       "VAR-check 📺","Gele kaart","Rode kaart 😱","Penalty!","Goal Nederland 🎉",
       "Keeper vangt spectaculair","Speler valt dramatisch (niks aan de hand)","Slow-motion herhaling","Wissel",
-      "Corner voor Nederland","Vrije trap gevaarlijk","Van Dijk op beeld 💪","Van Dijk kopt weg",
+      "Corner voor Nederland","Vrije trap gevaarlijk","Verdediger kopt de bal weg 💪","Kopbal over het doel",
       "Coach staat wild te gebaren","Commentator schreeuwt z'n longen uit","Speler kust tatoeage",
-      "Doelpunt in blessuretijd","Zweden scoort (iedereen gromt)","Iemand vraagt wat buitenspel is",
+      "Doelpunt in blessuretijd","Tegenstander scoort (iedereen gromt)","Iemand vraagt wat buitenspel is",
       "Iemand roept naar de tv","Iemand pakt haar telefoon 📱","Iemand voorspelt fout",
       "Iemand weet niet wie die speler is","Iemand zingt het volkslied mee","Selfie moment 🤳",
       "Iemand valt van de bank","\"Dat was toch geen fout?!\"","Iemand snapt VAR niet",
@@ -1242,7 +1242,7 @@ function goEvent() { showScreen('s-event'); }
 // ══════════════════════════════════
 
 function openEvent(id) {
-  currentEvent = EVENTS[id] || EVENTS['wk-ned-zwe'];
+  currentEvent = EVENTS[id] || EVENTS['wk-2026'];
   currentEvent.id = id;
 
   document.getElementById('ev-emoji').textContent = currentEvent.emoji;
